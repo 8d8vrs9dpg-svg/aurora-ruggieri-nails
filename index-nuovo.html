@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aurora Ruggieri Nails | Prenotazioni</title>
+<style>
+:root{--bg:#0d0b10;--panel:#1a151d;--ink:#fff5fb;--muted:#b9aab7;--line:#382b39;--pink:#ff3e9d;--pink2:#ff8bc4;--ok:#a7e3c0;--warn:#ffd18b;--bad:#ff9aab}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#281323 0,#0d0b10 55%);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#09080b;border-bottom:1px solid var(--line);padding:17px max(16px,calc((100% - 1100px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.logo{font:25px Georgia,serif}.sub{font-size:10px;letter-spacing:2px;color:var(--pink2)}
+nav,.actions{display:flex;gap:8px;flex-wrap:wrap}button{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:10px 13px;background:#211a25;color:var(--ink);font-weight:650}button.active,button.primary{background:var(--pink);color:#180b12;border-color:var(--pink)}button.danger{background:#38202c;color:#ff9bc9;border-color:#61334b}button:disabled{opacity:.4;cursor:not-allowed}
+main{max-width:1100px;margin:24px auto;padding:0 16px 50px}.view{display:none}.view.active{display:block}.intro{text-align:center;margin:10px auto 24px}.eyebrow{color:var(--pink2);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700}h1{font:34px Georgia,serif;margin:7px 0}h2{font:22px Georgia,serif;margin:0 0 13px}h3{font:18px Georgia,serif;margin:0 0 10px}p{color:var(--muted);margin:6px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin:13px 0;box-shadow:0 12px 30px #0004}.services{display:grid;grid-template-columns:1fr 1fr;gap:8px}.service{width:100%;text-align:left;background:#211a25}.service.selected{border-color:var(--pink);background:#351629}.service b{display:block}.service small{color:var(--pink2)}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0}input,select,textarea{width:100%;margin-top:5px;padding:11px;border-radius:9px;border:1px solid var(--line);background:#100d13;color:var(--ink);font:inherit}input[type=date],input[type=time]{color-scheme:dark}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.slot{padding:9px 2px}.slot.selected{background:var(--pink);color:#180b12;border-color:var(--pink)}
+.notice{background:#2a1724;border:1px solid #593047;border-radius:10px;padding:11px;color:#ffd0e6;font-size:13px;margin:10px 0}.notice.good{border-color:#38634b;background:#14251c;color:#c7f1d6}.notice.error{border-color:#744050;background:#2a1720;color:#ffc1ce}
+.row{padding:13px 0;border-top:1px solid var(--line)}.rowhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.muted{font-size:12px;color:var(--muted)}.pill{font-size:11px;border-radius:99px;padding:5px 9px;background:#351629;color:#ff9dca;font-weight:700}.pill.ok{background:#183126;color:var(--ok)}.pill.wait{background:#493016;color:var(--warn)}.pill.bad{background:#3a1b26;color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#211a25;border:1px solid var(--line);padding:13px;border-radius:12px}.stat b{display:block;font:26px Georgia,serif;color:var(--pink2)}.stat span{font-size:12px;color:var(--muted)}
+.summary{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);gap:10px}.hidden{display:none!important}.actions{margin-top:10px}.actions button{flex:1}.inline{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.inline>*{flex:1;min-width:130px}.dayrow{display:grid;grid-template-columns:100px 90px 1fr 1fr;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.dayrow input{margin:0}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+@media(max-width:650px){header{align-items:flex-start}.grid{grid-template-columns:1fr}.services{grid-template-columns:1fr}.slots{grid-template-columns:repeat(3,1fr)}h1{font-size:29px}.stats{grid-template-columns:1fr 1fr 1fr}.dayrow{grid-template-columns:1fr 1fr}.dayrow strong{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header>
+ <div><div class="logo">Aurora Ruggieri Nails</div><div class="sub">NAILS · LASHES · BEAUTY</div></div>
+ <nav><button class="active" id="tabClient" onclick="showView('client')">Prenota</button><button id="tabAdmin" onclick="showView('admin')">Area Aurora</button></nav>
+</header>
+<main>
+<section id="client" class="view active">
+ <div class="intro"><div class="eyebrow">Prenotazioni online</div><h1>Il tuo momento di bellezza</h1><p>Scegli il trattamento e invia la tua richiesta ad Aurora.</p></div>
+ <div class="card"><h2>1. Scegli il trattamento</h2><div class="services" id="serviceList"><p>Caricamento trattamenti…</p></div></div>
+ <div class="grid">
+  <div class="card"><h2>2. Giorno e orario</h2><label>Data desiderata<input type="date" id="date"></label><div id="slotMessage" class="notice">Scegli un trattamento e una data.</div><div id="slots" class="slots"></div></div>
+  <div class="card"><h2>3. I tuoi dati</h2><label>Nome e cognome<input id="customerName" autocomplete="name" maxlength="100"></label><label>Telefono<input id="customerPhone" type="tel" autocomplete="tel" maxlength="30"></label><label>Email (facoltativa)<input id="customerEmail" type="email" maxlength="254"></label><label>Note (facoltative)<textarea id="customerNote" rows="2" maxlength="1000"></textarea></label><div class="notice">La richiesta non è confermata finché Aurora non la approva. Nessun acconto previsto.</div></div>
+ </div>
+ <div class="card"><h2>Riepilogo</h2><div class="summary"><span>Trattamento</span><b id="summaryService">—</b></div><div class="summary"><span>Prezzo</span><b id="summaryPrice">—</b></div><div class="summary"><span>Data e ora</span><b id="summaryWhen">—</b></div><button class="primary" id="submitBooking" disabled onclick="submitBooking()">Invia richiesta</button><div id="clientFeedback" class="notice hidden"></div></div>
+</section>
+<section id="admin" class="view">
+ <div id="loginPanel" class="card">
+  <div class="eyebrow">Area riservata</div><h1>Accesso Aurora</h1><p>Accedi con l'email e la password dell'account amministratore.</p>
+  <label>Email<input id="loginEmail" type="email" autocomplete="username" value="aurora.ruggieri1999@gmail.com"></label>
+  <label>Password<input id="loginPassword" type="password" autocomplete="current-password"></label>
+  <button class="primary" onclick="login()">Accedi</button><div id="loginFeedback" class="notice hidden"></div>
+ </div>
+ <div id="adminPanel" class="hidden">
+  <div class="section-title"><div><div class="eyebrow">Pannello amministrativo</div><h1>Benvenuta, Aurora</h1><p>Gestisci richieste, calendario, servizi e orari.</p></div><button onclick="logout()">Esci</button></div>
+  <div class="stats"><div class="stat"><b id="pendingCount">0</b><span>Da approvare</span></div><div class="stat"><b id="confirmedCount">0</b><span>Accettate</span></div><div class="stat"><b id="rejectedCount">0</b><span>Rifiutate</span></div></div>
+  <div class="card"><div class="section-title"><h2>Richieste da approvare</h2><button onclick="loadAdmin()">Aggiorna</button></div><div id="adminRequests"><p>Nessuna richiesta.</p></div></div>
+  <div class="card"><h2>Appuntamenti confermati</h2><div id="confirmedList"><p>Nessun appuntamento.</p></div></div>
+  <div class="card"><h2>Storico rifiutate / annullate</h2><div id="rejectedList"><p>Nessuna richiesta.</p></div></div>
+  <div class="card"><h2>Gestione servizi, prezzi e durate</h2><p>Imposta la durata effettiva di ogni trattamento: senza durata il sistema non apre gli slot per quel servizio.</p><div id="serviceAdmin">Caricamento…</div></div>
+  <div class="card"><h2>Orari e pause</h2><p>Gli orari iniziali sono lunedì-venerdì 08:00–19:00. Sabato e domenica chiuso.</p><div id="hoursAdmin">Caricamento…</div></div>
+  <div id="adminFeedback" class="notice hidden"></div>
+ </div>
+</section>
+</main>
+<footer>Aurora Ruggieri Nails · Prenotazioni online</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://lvumrrmevcvdrykbfmnh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_grOUDTK2a_wpgYEtcIIf0g_0uLYq7XJ";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let catalog=[],selected=null,selectedTime="",hours=[],adminBookings=[];
+const $=id=>document.getElementById(id);
+const euro=n=>'€ '+Number(n).toFixed(2).replace('.',',');
+const pad=n=>String(n).padStart(2,'0');
+function localDate(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function minimumDate(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+2);return d}
+$('date').min=localDate(minimumDate());
+function feedback(id,msg,type=''){const el=$(id);el.textContent=msg;el.className='notice'+(type?' '+type:'');el.classList.remove('hidden')}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$(v).classList.add('active');$('tabClient').classList.toggle('active',v==='client');$('tabAdmin').classList.toggle('active',v==='admin');if(v==='admin')checkSession()}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function loadPublicData(){
+ const [s,h]=await Promise.all([sb.from('services').select('id,name,category,price,duration_minutes,active').eq('active',true).order('category').order('name'),sb.from('business_hours').select('*')]);
+ if(s.error){$('serviceList').innerHTML='<p>Impossibile caricare il listino. Ricarica la pagina.</p>';console.error(s.error);return}
+ catalog=s.data||[];hours=h.data||[];renderCatalog();renderSlots();updateSummary();
+}
+function renderCatalog(){
+ $('serviceList').innerHTML=catalog.length?catalog.map(s=>`<button class="service ${selected?.id===s.id?'selected':''}" onclick="chooseService('${s.id}')"><b>${escapeHtml(s.name)}</b><small>${euro(s.price)}</small></button>`).join(''):'<p>Nessun servizio attivo al momento.</p>';
+}
+function chooseService(id){selected=catalog.find(s=>s.id===id)||null;selectedTime='';renderCatalog();renderSlots();updateSummary()}
+$('date').addEventListener('change',()=>{selectedTime='';renderSlots();updateSummary()});
+function selectedHours(date){const day=new Date(date+'T12:00:00').getDay();return hours.find(h=>h.weekday===day)}
+async function renderSlots(){
+ $('slots').innerHTML='';const val=$('date').value;
+ if(!selected||!val){$('slotMessage').textContent='Scegli un trattamento e una data.';return}
+ const d=new Date(val+'T12:00:00');if(d.getDay()===0||d.getDay()===6){$('slotMessage').textContent='Aurora è chiusa il sabato e la domenica.';return}
+ if(d<minimumDate()){$('slotMessage').textContent='Occorrono almeno 48 ore di anticipo.';return}
+ if(!selected.duration_minutes){$('slotMessage').textContent='Questo trattamento non è ancora prenotabile: Aurora deve prima impostarne la durata.';return}
+ const h=selectedHours(val);if(!h||!h.is_open){$('slotMessage').textContent='Aurora è chiusa in questa data.';return}
+ if(!h.opening_time||!h.closing_time){$('slotMessage').textContent='Orari non ancora configurati.';return}
+ const {data:busy,error}=await sb.rpc('get_busy_slots',{target_date:val});
+ if(error){$('slotMessage').textContent='Non riesco a verificare le disponibilità. Riprova tra poco.';return}
+ const toMin=t=>{const [a,b]=t.split(':').map(Number);return a*60+b};
+ const open=toMin(h.opening_time),close=toMin(h.closing_time),breakStart=h.break_start?toMin(h.break_start):null,breakEnd=h.break_end?toMin(h.break_end):null,dur=selected.duration_minutes;
+ const now=new Date();const minAllowed=new Date(now.getTime()+48*60*60*1000);
+ $('slotMessage').textContent='Seleziona un orario libero. Gli slot iniziano ogni 15 minuti.';
+ for(let m=open;m+dur<=close;m+=15){
+  const end=m+dur;if(breakStart!==null&&breakEnd!==null&&m<breakEnd&&end>breakStart)continue;
+  const candidate=new Date(val+'T'+pad(Math.floor(m/60))+':'+pad(m%60)+':00');
+  if(candidate<minAllowed)continue;
+  const occupied=(busy||[]).some(b=>m<toMin(b.end_time||b.start_time)+ (b.end_time?0:1) && end>toMin(b.start_time));
+  if(occupied)continue;
+  const time=pad(Math.floor(m/60))+':'+pad(m%60),btn=document.createElement('button');btn.className='slot'+(selectedTime===time?' selected':'');btn.textContent=time;btn.onclick=()=>{selectedTime=time;renderSlots();updateSummary()};$('slots').appendChild(btn);
+ }
+ if(!$('slots').children.length)$('slotMessage').textContent='Nessun orario disponibile per questa data e questo trattamento.';
+}
+function updateSummary(){
+ $('summaryService').textContent=selected?selected.name:'—';$('summaryPrice').textContent=selected?euro(selected.price):'—';
+ $('summaryWhen').textContent=selectedTime&&$('date').value?new Date($('date').value+'T12:00:00').toLocaleDateString('it-IT')+' · '+selectedTime:'—';
+ $('submitBooking').disabled=!(selected&&selectedTime&&$('customerName').value.trim()&&$('customerPhone').value.trim());
+}
+['customerName','customerPhone'].forEach(id=>$(id).addEventListener('input',updateSummary));
+async function submitBooking(){
+ if(!selected||!selectedTime)return;
+ const payload={service_id:selected.id,service_name:selected.name,price:selected.price,booking_date:$('date').value,start_time:selectedTime,customer_name:$('customerName').value.trim(),customer_phone:$('customerPhone').value.trim(),customer_email:$('customerEmail').value.trim()||null,customer_note:$('customerNote').value.trim()||null,status:'pending'};
+ $('submitBooking').disabled=true;
+ const {error}=await sb.from('bookings').insert(payload);
+ if(error){feedback('clientFeedback',error.message.includes('durata')?'Aurora deve ancora configurare la durata di questo trattamento.':error.message,'error');$('submitBooking').disabled=false;return}
+ feedback('clientFeedback','Richiesta inviata correttamente! Aurora dovrà approvarla prima che sia confermata.','good');
+ selected=null;selectedTime='';$('date').value='';['customerName','customerPhone','customerEmail','customerNote'].forEach(id=>$(id).value='');
+ renderCatalog();renderSlots();updateSummary();
+}
+async function login(){
+ feedback('loginFeedback','Accesso in corso…');
+ const {data,error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});
+ if(error){feedback('loginFeedback','Accesso non riuscito: '+error.message,'error');return}
+ await checkSession();
+}
+async function logout(){await sb.auth.signOut();$('loginPassword').value='';checkSession()}
+async function checkSession(){
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session){$('loginPanel').classList.remove('hidden');$('adminPanel').classList.add('hidden');return}
+ const {data:profile,error}=await sb.from('profiles').select('role').eq('id',session.user.id).single();
+ if(error||profile?.role!=='admin'){await sb.auth.signOut();$('loginPanel').classList.remove('hidden');$('adminPanel').classList.add('hidden');feedback('loginFeedback','Questo account non dispone dei permessi amministratore.','error');return}
+ $('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');await loadAdmin();
+}
+function dateLabel(d){return new Date(d+'T12:00:00').toLocaleDateString('it-IT')}
+function renderBooking(b,actions=false){
+ const state=b.status==='pending'?'In attesa':b.status==='confirmed'?'Confermata':b.status==='rejected'?'Rifiutata':'Annullata';
+ const pill=b.status==='confirmed'?'ok':b.status==='pending'?'wait':'bad';
+ return `<div class="row"><div class="rowhead"><b>${escapeHtml(b.customer_name)}</b><span class="pill ${pill}">${state}</span></div><div class="muted">${escapeHtml(b.service_name)} · ${dateLabel(b.booking_date)} · ${String(b.start_time).slice(0,5)}–${String(b.end_time||'').slice(0,5)} · ${euro(b.price)}</div><div class="muted">Tel. ${escapeHtml(b.customer_phone)}${b.customer_email?' · '+escapeHtml(b.customer_email):''}</div>${b.customer_note?`<div class="muted">Note: ${escapeHtml(b.customer_note)}</div>`:''}${actions?`<div class="actions"><button class="primary" onclick="decide('${b.id}','confirmed')">✓ Accetta</button><button class="danger" onclick="decide('${b.id}','rejected')">✕ Rifiuta</button></div>`:''}</div>`;
+}
+async function loadAdmin(){
+ const {data,error}=await sb.from('bookings').select('*').order('booking_date').order('start_time');
+ if(error){feedback('adminFeedback','Errore nel caricamento prenotazioni: '+error.message,'error');return}
+ adminBookings=data||[];const p=adminBookings.filter(b=>b.status==='pending'),c=adminBookings.filter(b=>b.status==='confirmed'),r=adminBookings.filter(b=>['rejected','cancelled'].includes(b.status));
+ $('pendingCount').textContent=p.length;$('confirmedCount').textContent=c.length;$('rejectedCount').textContent=r.length;
+ $('adminRequests').innerHTML=p.length?p.map(b=>renderBooking(b,true)).join(''):'<p>Nessuna richiesta in attesa.</p>';
+ $('confirmedList').innerHTML=c.length?c.map(b=>renderBooking(b)).join(''):'<p>Nessun appuntamento confermato.</p>';
+ $('rejectedList').innerHTML=r.length?r.map(b=>renderBooking(b)).join(''):'<p>Nessuna richiesta rifiutata.</p>';
+ await loadAdminServices();await loadAdminHours();
+}
+async function decide(id,status){
+ const {error}=await sb.from('bookings').update({status,decided_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
+ if(error){feedback('adminFeedback','Non è stato possibile aggiornare la prenotazione: '+error.message,'error');return}
+ feedback('adminFeedback',status==='confirmed'?'Prenotazione confermata.':'Richiesta rifiutata.','good');await loadAdmin();
+}
+async function loadAdminServices(){
+ const {data,error}=await sb.from('services').select('*').order('category').order('name');if(error){$('serviceAdmin').textContent=error.message;return}
+ catalog=data||[];renderCatalog();
+ $('serviceAdmin').innerHTML=catalog.map(s=>`<div class="row"><b>${escapeHtml(s.name)}</b><div class="inline"><label>Prezzo (€)<input type="number" min="0" step="0.50" id="price_${s.id}" value="${s.price}"></label><label>Durata (minuti)<input type="number" min="15" step="15" id="duration_${s.id}" value="${s.duration_minutes||''}" placeholder="Es. 60"></label><label>Visibile<select id="active_${s.id}"><option value="true" ${s.active?'selected':''}>Sì</option><option value="false" ${!s.active?'selected':''}>No</option></select></label><button onclick="saveService('${s.id}')">Salva</button></div></div>`).join('');
+}
+async function saveService(id){
+ const price=Number($('price_'+id).value),duration=Number($('duration_'+id).value),active=$('active_'+id).value==='true';
+ if(!Number.isFinite(price)||price<0||!Number.isInteger(duration)||duration<15||duration%15!==0){feedback('adminFeedback','Inserisci un prezzo valido e una durata in multipli di 15 minuti.','error');return}
+ const {error}=await sb.from('services').update({price,duration_minutes:duration,active}).eq('id',id);
+ if(error){feedback('adminFeedback','Errore salvataggio servizio: '+error.message,'error');return}
+ feedback('adminFeedback','Servizio aggiornato.','good');await loadAdminServices();renderSlots();
+}
+const dayNames=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+async function loadAdminHours(){
+ const {data,error}=await sb.from('business_hours').select('*').order('weekday');if(error){$('hoursAdmin').textContent=error.message;return}
+ hours=data||[];
+ $('hoursAdmin').innerHTML=hours.map(h=>`<div class="dayrow"><strong>${dayNames[h.weekday]}</strong><label>Aperto<select id="open_${h.weekday}"><option value="true" ${h.is_open?'selected':''}>Sì</option><option value="false" ${!h.is_open?'selected':''}>No</option></select></label><label>Apertura<input type="time" id="from_${h.weekday}" value="${h.opening_time||''}"></label><label>Chiusura<input type="time" id="to_${h.weekday}" value="${h.closing_time||''}"></label><label>Inizio pausa<input type="time" id="bs_${h.weekday}" value="${h.break_start||''}"></label><label>Fine pausa<input type="time" id="be_${h.weekday}" value="${h.break_end||''}"></label><button onclick="saveHours(${h.weekday})">Salva orario</button></div>`).join('');
+}
+async function saveHours(day){
+ const is_open=$('open_'+day).value==='true',opening_time=$('from_'+day).value||null,closing_time=$('to_'+day).value||null,break_start=$('bs_'+day).value||null,break_end=$('be_'+day).value||null;
+ if(is_open&&(!opening_time||!closing_time||opening_time>=closing_time)){feedback('adminFeedback','Controlla l’orario di apertura e chiusura.','error');return}
+ if((break_start&&!break_end)||(!break_start&&break_end)||(break_start&&break_end&&(break_start>=break_end||break_start<opening_time||break_end>closing_time))){feedback('adminFeedback','Controlla gli orari della pausa.','error');return}
+ const {error}=await sb.from('business_hours').update({is_open,opening_time,closing_time,break_start,break_end}).eq('weekday',day);
+ if(error){feedback('adminFeedback','Errore salvataggio orario: '+error.message,'error');return}
+ feedback('adminFeedback','Orario aggiornato.','good');const {data}=await sb.from('business_hours').select('*');hours=data||[];
+}
+sb.auth.onAuthStateChange((_event,session)=>{if(!session){$('loginPanel').classList.remove('hidden');$('adminPanel').classList.add('hidden')}});
+loadPublicData();
+</script>
+</body>
+</html>

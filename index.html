@@ -35,8 +35,9 @@ label{display:block;color:var(--muted);font-size:13px;margin:10px 0}input,select
   <div class="card"><h2>2. Giorno e orario</h2><label>Data desiderata<input type="date" id="date"></label><div id="slotMessage" class="notice">Scegli un trattamento e una data.</div><div id="slots" class="slots"></div></div>
   <div class="card"><h2>3. I tuoi dati</h2><label>Nome e cognome<input id="customerName" autocomplete="name" maxlength="100"></label><label>Telefono<input id="customerPhone" type="tel" autocomplete="tel" maxlength="30"></label><label>Email (facoltativa)<input id="customerEmail" type="email" maxlength="254"></label><label>Note (facoltative)<textarea id="customerNote" rows="2" maxlength="1000"></textarea></label><div class="notice">La richiesta non è confermata finché Aurora non la approva. Nessun acconto previsto.</div></div>
  </div>
- <div class="card"><h2>Riepilogo</h2><div class="summary"><span>Trattamento</span><b id="summaryService">—</b></div><div class="summary"><span>Prezzo</span><b id="summaryPrice">—</b></div><div class="summary"><span>Data e ora</span><b id="summaryWhen">—</b></div><button class="primary" id="submitBooking" disabled onclick="submitBooking()">Invia richiesta</button><div id="clientFeedback" class="notice hidden"></div></div>
+ <div class="card"><h2>Riepilogo</h2><div class="summary"><span>Trattamento</span><b id="summaryService">—</b></div><div class="summary"><span>Prezzo</span><b id="summaryPrice">—</b></div><div class="summary"><span>Data e ora</span><b id="summaryWhen">—</b></div><button class="primary" id="submitBooking" disabled onclick="submitBooking()">Invia richiesta</button><div id="clientFeedback" class="notice hidden"></div><div id="bookingCancelLink" class="notice good hidden"></div></div>
 </section>
+<section id="cancelPanel" class="view"><div class="card"><div class="eyebrow">Gestione appuntamento</div><h1>Annulla prenotazione</h1><p>Puoi annullare questa prenotazione fino a 24 ore prima dell’orario previsto.</p><button class="danger" id="cancelBookingButton" onclick="cancelBookingFromLink()">Conferma cancellazione</button><div id="cancelFeedback" class="notice hidden"></div></div></section>
 <section id="admin" class="view">
  <div id="loginPanel" class="card">
   <div class="eyebrow">Area riservata</div><h1>Accesso Aurora</h1><p>Accedi con l'email e la password dell'account amministratore.</p>
@@ -117,13 +118,35 @@ function updateSummary(){
 ['customerName','customerPhone'].forEach(id=>$(id).addEventListener('input',updateSummary));
 async function submitBooking(){
  if(!selected||!selectedTime)return;
- const payload={service_id:selected.id,service_name:selected.name,price:selected.price,booking_date:$('date').value,start_time:selectedTime,customer_name:$('customerName').value.trim(),customer_phone:$('customerPhone').value.trim(),customer_email:$('customerEmail').value.trim()||null,customer_note:$('customerNote').value.trim()||null,status:'pending'};
+ const cancellationToken=crypto.randomUUID();
+ const payload={service_id:selected.id,service_name:selected.name,price:selected.price,booking_date:$('date').value,start_time:selectedTime,customer_name:$('customerName').value.trim(),customer_phone:$('customerPhone').value.trim(),customer_email:$('customerEmail').value.trim()||null,customer_note:$('customerNote').value.trim()||null,status:'pending',cancellation_token:cancellationToken};
  $('submitBooking').disabled=true;
  const {error}=await sb.from('bookings').insert(payload);
  if(error){feedback('clientFeedback',error.message.includes('durata')?'Aurora deve ancora configurare la durata di questo trattamento.':error.message,'error');$('submitBooking').disabled=false;return}
  feedback('clientFeedback','Richiesta inviata correttamente! Aurora dovrà approvarla prima che sia confermata.','good');
+ const cancelUrl=location.origin+location.pathname+'?cancel='+encodeURIComponent(cancellationToken);
+ const linkBox=$('bookingCancelLink');linkBox.classList.remove('hidden');linkBox.innerHTML='Link personale per annullare la prenotazione (valido fino a 24 ore prima):<br><a id="personalCancelLink" href="'+cancelUrl+'" style="color:#ff8bc4;overflow-wrap:anywhere">'+cancelUrl+'</a><br><button type="button" onclick="copyCancellationLink()">Copia link</button><div class="muted">Invia questo link alla cliente insieme alla conferma. Il sito non invia ancora email o WhatsApp automatici.</div>';
  selected=null;selectedTime='';$('date').value='';['customerName','customerPhone','customerEmail','customerNote'].forEach(id=>$(id).value='');
  renderCatalog();renderSlots();updateSummary();
+}
+function copyCancellationLink(){
+ const link=$('personalCancelLink')?.href;if(!link)return;
+ navigator.clipboard?.writeText(link).then(()=>feedback('clientFeedback','Link personale copiato.','good')).catch(()=>feedback('clientFeedback','Seleziona e copia il link visualizzato.','error'));
+}
+async function cancelBookingFromLink(){
+ const token=new URLSearchParams(location.search).get('cancel');
+ if(!token){feedback('cancelFeedback','Link non valido.','error');return}
+ $('cancelBookingButton').disabled=true;
+ const {data,error}=await sb.rpc('cancel_booking_by_token',{token});
+ if(error){feedback('cancelFeedback','Non è stato possibile annullare la prenotazione. Contatta Aurora.','error');$('cancelBookingButton').disabled=false;return}
+ const messages={cancelled:'Prenotazione annullata correttamente.',too_late:'Non è più possibile annullare online: mancano meno di 24 ore all’appuntamento. Contatta Aurora.',not_found:'Link non valido o prenotazione non trovata.',not_cancellable:'Questa prenotazione non può più essere annullata.'};
+ feedback('cancelFeedback',messages[data]||'Esito non riconosciuto. Contatta Aurora.',''+(data==='cancelled'?'good':'error'));
+} 
+function handleCancellationLink(){
+ const token=new URLSearchParams(location.search).get('cancel');if(!token)return;
+ document.querySelectorAll('#client > *').forEach(el=>{if(el.id!=='cancelPanel')el.classList.add('hidden')});
+ $('cancelPanel').classList.add('active');$('client').classList.add('active');
+ $('tabClient').classList.add('active');$('tabAdmin').classList.remove('active');
 }
 async function login(){
  feedback('loginFeedback','Accesso in corso…');
@@ -220,6 +243,7 @@ async function saveHours(day){
 }
 sb.auth.onAuthStateChange((_event,session)=>{if(!session){$('loginPanel').classList.remove('hidden');$('adminPanel').classList.add('hidden')}});
 loadPublicData();
+handleCancellationLink();
 </script>
 </body>
 </html>
